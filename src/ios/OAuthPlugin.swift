@@ -228,9 +228,9 @@ class OAuthPlugin : CDVPlugin, SFSafariViewControllerDelegate, ASWebAuthenticati
             return
         }
 
-        if !url.absoluteString.hasPrefix(self.callbackScheme!) {
-            return
-        }
+        //if !url.absoluteString.hasPrefix(self.callbackScheme!) {
+        //    return
+        //}
 
         self.parseToken(from: url)
     }
