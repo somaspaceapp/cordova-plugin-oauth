@@ -59,7 +59,7 @@ public class OAuthPlugin extends CordovaPlugin {
      * The name of the package to use for the custom tab service.
      */
     private String tabProvider = null;
-
+    private boolean loginSuccessful = false;
 
     /**
      * Executes the request.
@@ -137,6 +137,19 @@ public class OAuthPlugin extends CordovaPlugin {
         }
     }
 
+  @Override
+  public void onResume(boolean multitasking) {
+    super.onResume(multitasking);
+    // Chrome Custom Tabs currently have no way to detect that they were closed.
+    // But if this happens, the app resumes and onResume is called which can be used as workaround.
+    // If we didn't handle a successful oAuth response, we can assume that the login was cancelled in onResume.
+    if (!loginSuccessful) {
+      this.webView.getEngine().evaluateJavascript("window.dispatchEvent(new MessageEvent('message', { data: 'oauth::{\"error\":\"cancelled\"}' }));", null);
+    } else {
+      // reset loginSuccessful to make sure it is correctly initialized on the next login attempt
+      loginSuccessful = false;
+    }
+  }
 
     /**
      * Launches the custom tab with the OAuth endpoint URL.
